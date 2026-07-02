@@ -82,7 +82,7 @@ function Form({ preferences, features, onSubmit }) {
       </div>
 
       <div className="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row">
-        <SubmitButton text="Obter recomendação" />
+        <SubmitButton text="Obter recomendação" disabled={!hasSelection} />
         <button
           type="button"
           onClick={resetForm}

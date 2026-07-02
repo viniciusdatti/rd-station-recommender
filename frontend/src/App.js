@@ -1,71 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Form from './components/Form/Form';
+import LoadingSkeleton from './components/LoadingSkeleton';
 import RecommendationList from './components/RecommendationList/RecommendationList';
 import getProducts from './services/product.service';
-import recommendationService from './services/recommendation.service';
-
-/**
- * Collects the unique values of a product attribute (e.g. "preferences" or
- * "features"), preserving first-appearance order. Feeds the form options.
- */
-const getUniqueValues = (products, attribute) => {
-  const values = products.flatMap((product) => product[attribute] ?? []);
-  return [...new Set(values)];
-};
+import { getRecommendations } from './services/recommendation.service';
+import { getUniqueValues } from './utils/productOptions';
 
 const PANEL_CLASSES = 'rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100';
-
-function SkeletonRows() {
-  const rows = Array.from({ length: 6 });
-
-  return (
-    <div className="space-y-4">
-      {rows.map((_, index) => (
-        <div key={index} className="flex items-center gap-3">
-          <div className="h-5 w-5 animate-pulse rounded bg-slate-200" />
-          <div className="h-4 w-3/4 animate-pulse rounded bg-slate-200" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/**
- * Skeleton placeholder shown while products load. It mirrors the real stacked
- * layout so the transition to loaded content feels seamless.
- */
-function LoadingSkeleton() {
-  const cards = Array.from({ length: 3 });
-
-  return (
-    <div className="space-y-6" aria-hidden="true">
-      <div className={PANEL_CLASSES}>
-        <div className="mb-6 h-5 w-40 animate-pulse rounded bg-slate-200" />
-        <div className="grid gap-x-8 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
-          <SkeletonRows />
-          <SkeletonRows />
-          <SkeletonRows />
-        </div>
-      </div>
-
-      <div className={PANEL_CLASSES}>
-        <div className="mb-6 h-5 w-40 animate-pulse rounded bg-slate-200" />
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {cards.map((_, index) => (
-            <div key={index} className="rounded-xl border border-slate-100 p-4">
-              <div className="mb-3 h-4 w-1/2 animate-pulse rounded bg-slate-200" />
-              <div className="space-y-2">
-                <div className="h-3 w-full animate-pulse rounded bg-slate-200" />
-                <div className="h-3 w-5/6 animate-pulse rounded bg-slate-200" />
-                <div className="h-3 w-2/3 animate-pulse rounded bg-slate-200" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -86,6 +27,9 @@ function App() {
           setProducts(data);
         }
       } catch (fetchError) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(fetchError);
+        }
         if (isMounted) {
           setError(
             'Não foi possível carregar os produtos. Tente novamente mais tarde.'
@@ -116,11 +60,8 @@ function App() {
     }
   }, [hasSearched, recommendations]);
 
-  const handleCalculateRecommendations = (preferences) => {
-    const result = recommendationService.getRecommendations(
-      preferences,
-      products
-    );
+  const handleCalculateRecommendations = (formData) => {
+    const result = getRecommendations(formData, products);
     setRecommendations(result);
     setHasSearched(true);
   };
@@ -163,7 +104,12 @@ function App() {
               />
             </section>
 
-            <section ref={resultsRef} className={`${PANEL_CLASSES} scroll-mt-6`}>
+            <section
+              ref={resultsRef}
+              className={`${PANEL_CLASSES} scroll-mt-6`}
+              aria-live="polite"
+              aria-relevant="additions text"
+            >
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-slate-900">
                   Recomendações

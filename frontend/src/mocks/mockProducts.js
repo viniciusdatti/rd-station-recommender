@@ -1,3 +1,6 @@
+/**
+ * Test fixture — keep in sync with backend/db.json (products array).
+ */
 const mockProducts = [
   {
     id: 1,

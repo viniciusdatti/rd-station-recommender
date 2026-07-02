@@ -29,6 +29,20 @@ describe('Form (presentational)', () => {
     });
   });
 
+  test('submit button is disabled when no preference or feature is selected', () => {
+    render(<Form preferences={preferences} features={features} onSubmit={jest.fn()} />);
+
+    expect(
+      screen.getByRole('button', { name: /obter recomendação/i })
+    ).toBeDisabled();
+
+    fireEvent.click(screen.getByLabelText(preferences[0]));
+
+    expect(
+      screen.getByRole('button', { name: /obter recomendação/i })
+    ).toBeEnabled();
+  });
+
   test('clear button resets the selection and is disabled when empty', () => {
     render(<Form preferences={preferences} features={features} onSubmit={jest.fn()} />);
 

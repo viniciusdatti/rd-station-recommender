@@ -105,4 +105,5 @@ const getRecommendations = (
 
 const recommendationService = { getRecommendations };
 
+export { getRecommendations };
 export default recommendationService;

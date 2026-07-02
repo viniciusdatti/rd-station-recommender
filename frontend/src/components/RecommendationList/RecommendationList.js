@@ -22,10 +22,10 @@ function EmptyState() {
         />
       </svg>
       <p className="mt-3 text-sm font-medium text-slate-600">
-        Nenhum produto atende a todas as preferências selecionadas.
+        Nenhum produto corresponde à sua seleção.
       </p>
       <p className="mt-1 text-xs text-slate-400">
-        Tente remover alguns filtros e buscar novamente.
+        Tente ajustar as preferências ou funcionalidades e buscar novamente.
       </p>
     </div>
   );

@@ -25,6 +25,8 @@ function CheckIcon() {
  * category and features. Soft elevation that lifts on hover.
  */
 function ProductCard({ product }) {
+  const features = product.features ?? [];
+
   return (
     <article className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
@@ -37,7 +39,7 @@ function ProductCard({ product }) {
       </div>
 
       <ul className="mt-3 space-y-1.5">
-        {product.features.map((feature) => (
+        {features.map((feature) => (
           <li
             key={feature}
             className="flex items-start gap-2 text-sm text-slate-600"
