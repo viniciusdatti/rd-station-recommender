@@ -18,7 +18,7 @@ describe('Form (presentational)', () => {
 
     fireEvent.click(screen.getByLabelText(preferences[1]));
     fireEvent.click(screen.getByLabelText(features[0]));
-    fireEvent.click(screen.getByLabelText('Múltiplos produtos'));
+    fireEvent.click(screen.getByRole('radio', { name: 'Múltiplos produtos' }));
     fireEvent.click(screen.getByRole('button', { name: /obter recomendação/i }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -27,5 +27,18 @@ describe('Form (presentational)', () => {
       selectedFeatures: [features[0]],
       selectedRecommendationType: 'MultipleProducts',
     });
+  });
+
+  test('clear button resets the selection and is disabled when empty', () => {
+    render(<Form preferences={preferences} features={features} onSubmit={jest.fn()} />);
+
+    const clearButton = screen.getByRole('button', { name: /limpar/i });
+    expect(clearButton).toBeDisabled();
+
+    fireEvent.click(screen.getByLabelText(preferences[0]));
+    expect(clearButton).toBeEnabled();
+
+    fireEvent.click(clearButton);
+    expect(screen.getByLabelText(preferences[0])).not.toBeChecked();
   });
 });

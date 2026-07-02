@@ -22,6 +22,10 @@ const INITIAL_FORM_STATE = {
 function Form({ preferences, features, onSubmit }) {
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
+  const hasSelection =
+    formData.selectedPreferences.length > 0 ||
+    formData.selectedFeatures.length > 0;
+
   const toggleSelection = (field, value) => {
     setFormData((current) => {
       const values = current[field];
@@ -42,6 +46,10 @@ function Form({ preferences, features, onSubmit }) {
     }));
   };
 
+  const resetForm = () => {
+    setFormData(INITIAL_FORM_STATE);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit(formData);
@@ -54,7 +62,7 @@ function Form({ preferences, features, onSubmit }) {
         options={preferences}
         selectedValues={formData.selectedPreferences}
         onToggle={(value) => toggleSelection('selectedPreferences', value)}
-        accentClassName="text-blue-600"
+        accentClassName="accent-blue-600"
       />
 
       <CheckboxGroup
@@ -62,7 +70,7 @@ function Form({ preferences, features, onSubmit }) {
         options={features}
         selectedValues={formData.selectedFeatures}
         onToggle={(value) => toggleSelection('selectedFeatures', value)}
-        accentClassName="text-green-600"
+        accentClassName="accent-emerald-600"
       />
 
       <RecommendationType
@@ -70,7 +78,17 @@ function Form({ preferences, features, onSubmit }) {
         onChange={changeRecommendationType}
       />
 
-      <SubmitButton text="Obter recomendação" />
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <SubmitButton text="Obter recomendação" />
+        <button
+          type="button"
+          onClick={resetForm}
+          disabled={!hasSelection}
+          className="w-full rounded-lg border border-gray-300 px-5 py-2.5 font-semibold text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        >
+          Limpar
+        </button>
+      </div>
     </form>
   );
 }
