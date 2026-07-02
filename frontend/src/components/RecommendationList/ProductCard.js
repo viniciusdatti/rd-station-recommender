@@ -22,13 +22,13 @@ function CheckIcon() {
 
 /**
  * Presentational card that shows a single recommended product: its name,
- * category and features.
+ * category and features. Soft elevation that lifts on hover.
  */
 function ProductCard({ product }) {
   return (
-    <article className="rounded-xl border border-gray-200 p-4 transition-shadow hover:shadow-md">
+    <article className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="break-words text-base font-semibold text-gray-900">
+        <h3 className="break-words text-base font-semibold text-slate-900">
           {product.name}
         </h3>
         <span className="shrink-0 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
@@ -40,7 +40,7 @@ function ProductCard({ product }) {
         {product.features.map((feature) => (
           <li
             key={feature}
-            className="flex items-start gap-2 text-sm text-gray-600"
+            className="flex items-start gap-2 text-sm text-slate-600"
           >
             <CheckIcon />
             <span>{feature}</span>

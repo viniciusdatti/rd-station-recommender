@@ -61,10 +61,10 @@ const scoreProduct = (product, selectedPreferences, selectedFeatures) =>
  */
 const rankByRelevance = (scored) =>
   [...scored]
-    .sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return b.originalIndex - a.originalIndex; // tie: last valid product wins
-    })
+    .sort((a, b) =>
+      // Higher score first; on a tie the later product (higher index) wins.
+      b.score !== a.score ? b.score - a.score : b.originalIndex - a.originalIndex
+    )
     .map((entry) => entry.product);
 
 /**
@@ -97,12 +97,10 @@ const getRecommendations = (
     .filter((entry) => entry.score > 0);
 
   const ranked = rankByRelevance(matchedProducts);
+  const isSingleProduct =
+    selectedRecommendationType === RecommendationType.SINGLE;
 
-  if (selectedRecommendationType === RecommendationType.SINGLE) {
-    return ranked.slice(0, 1);
-  }
-
-  return ranked;
+  return isSingleProduct ? ranked.slice(0, 1) : ranked;
 };
 
 const recommendationService = { getRecommendations };
