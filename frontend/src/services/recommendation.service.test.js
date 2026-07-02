@@ -6,11 +6,11 @@ import mockProducts from '../mocks/mockProducts';
 const { getRecommendations } = recommendationService;
 
 describe('recommendationService.getRecommendations', () => {
-  describe('quando não há correspondências', () => {
-    test('retorna lista vazia se nenhuma preferência/feature casa com os produtos', () => {
+  describe('when there are no matches', () => {
+    test('returns an empty list when no preference or feature matches any product', () => {
       const formData = {
-        selectedPreferences: ['Preferência inexistente'],
-        selectedFeatures: ['Feature inexistente'],
+        selectedPreferences: ['Non-existent preference'],
+        selectedFeatures: ['Non-existent feature'],
         selectedRecommendationType: RecommendationType.MULTIPLE,
       };
 
@@ -19,9 +19,9 @@ describe('recommendationService.getRecommendations', () => {
       expect(recommendations).toEqual([]);
     });
 
-    test('retorna lista vazia no modo SingleProduct sem correspondências', () => {
+    test('returns an empty list in SingleProduct mode with no matches', () => {
       const formData = {
-        selectedPreferences: ['Preferência inexistente'],
+        selectedPreferences: ['Non-existent preference'],
         selectedRecommendationType: RecommendationType.SINGLE,
       };
 
@@ -30,7 +30,7 @@ describe('recommendationService.getRecommendations', () => {
       expect(recommendations).toEqual([]);
     });
 
-    test('retorna lista vazia quando o usuário não seleciona nada', () => {
+    test('returns an empty list when the user selects nothing', () => {
       const formData = {
         selectedPreferences: [],
         selectedFeatures: [],
@@ -43,8 +43,8 @@ describe('recommendationService.getRecommendations', () => {
     });
   });
 
-  describe('modo SingleProduct', () => {
-    test('retorna o único produto com maior afinidade', () => {
+  describe('SingleProduct mode', () => {
+    test('returns the single product with the highest affinity', () => {
       const formData = {
         selectedPreferences: ['Integração com chatbots'],
         selectedFeatures: ['Chat ao vivo e mensagens automatizadas'],
@@ -57,7 +57,7 @@ describe('recommendationService.getRecommendations', () => {
       expect(recommendations[0].name).toBe('RD Conversas');
     });
 
-    test('retorna apenas um produto mesmo havendo vários matches', () => {
+    test('returns only one product even when multiple products match', () => {
       const formData = {
         selectedPreferences: [
           'Integração fácil com ferramentas de e-mail',
@@ -76,8 +76,8 @@ describe('recommendationService.getRecommendations', () => {
     });
   });
 
-  describe('modo MultipleProducts', () => {
-    test('retorna todos os produtos com match, ordenados por score decrescente', () => {
+  describe('MultipleProducts mode', () => {
+    test('returns all matching products sorted by descending score', () => {
       const formData = {
         selectedPreferences: [
           'Integração fácil com ferramentas de e-mail',
@@ -100,7 +100,7 @@ describe('recommendationService.getRecommendations', () => {
       ]);
     });
 
-    test('não inclui produtos sem nenhuma correspondência', () => {
+    test('excludes products with no matches', () => {
       const formData = {
         selectedPreferences: ['Integração com chatbots'],
         selectedRecommendationType: RecommendationType.MULTIPLE,
@@ -113,8 +113,8 @@ describe('recommendationService.getRecommendations', () => {
     });
   });
 
-  describe('regra crítica de desempate (empate no score → último produto válido)', () => {
-    test('SingleProduct: entre dois produtos empatados, retorna o que aparece por último na lista', () => {
+  describe('critical tie-break rule (same score → last valid product wins)', () => {
+    test('SingleProduct: when two products tie, returns the one that appears last in the list', () => {
       // "Automação de marketing" -> RD Station Marketing (id 2, score 1)
       // "Integração com chatbots" -> RD Conversas        (id 3, score 1)
       // Same score -> the product that appears last in the list wins.
@@ -132,7 +132,7 @@ describe('recommendationService.getRecommendations', () => {
       expect(recommendations[0].name).toBe('RD Conversas');
     });
 
-    test('SingleProduct: empate por preferência + feature também resolve pelo último válido', () => {
+    test('SingleProduct: preference + feature tie also resolves to the last valid product', () => {
       // RD Station CRM       (id 1): 1 preference + 1 feature = score 2
       // RD Station Marketing (id 2): 1 preference + 1 feature = score 2
       const formData = {
@@ -153,15 +153,15 @@ describe('recommendationService.getRecommendations', () => {
       expect(recommendations[0].name).toBe('RD Station Marketing');
     });
 
-    test('o desempate é determinístico independente da ordem da seleção', () => {
-      const selecaoOrdemA = {
+    test('tie-break is deterministic regardless of selection order', () => {
+      const selectionOrderA = {
         selectedPreferences: [
           'Automação de marketing',
           'Integração com chatbots',
         ],
         selectedRecommendationType: RecommendationType.SINGLE,
       };
-      const selecaoOrdemB = {
+      const selectionOrderB = {
         selectedPreferences: [
           'Integração com chatbots',
           'Automação de marketing',
@@ -169,11 +169,11 @@ describe('recommendationService.getRecommendations', () => {
         selectedRecommendationType: RecommendationType.SINGLE,
       };
 
-      const resultadoA = getRecommendations(selecaoOrdemA, mockProducts);
-      const resultadoB = getRecommendations(selecaoOrdemB, mockProducts);
+      const resultA = getRecommendations(selectionOrderA, mockProducts);
+      const resultB = getRecommendations(selectionOrderB, mockProducts);
 
-      expect(resultadoA[0].name).toBe('RD Conversas');
-      expect(resultadoB[0].name).toBe('RD Conversas');
+      expect(resultA[0].name).toBe('RD Conversas');
+      expect(resultB[0].name).toBe('RD Conversas');
     });
   });
 });
